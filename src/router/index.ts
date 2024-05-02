@@ -30,6 +30,11 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const tokenExpiry = localStorage.getItem("tokenExpiry");
+  if (tokenExpiry && new Date().getTime() > Number(tokenExpiry)) {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("tokenExpiry");
+  }
   const isAuthenticated = !!localStorage.getItem("authToken");
   if (to.matched.some((record) => record.meta.guest)) {
     if (isAuthenticated) {

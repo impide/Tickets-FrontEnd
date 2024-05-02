@@ -54,7 +54,7 @@
           </li>
         </ul>
         <ul
-          class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
+          class="font-medium flex flex-col p-4 md:p-0 mt-4 gap-2 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
           v-if="auth"
         >
           <li>
@@ -67,8 +67,10 @@
           </li>
           <li>
             <router-link to="/login" @click="logout"
-              ><button class="bg-red-500 px-2 text-slate-100 rounded-md">
-                déconnexion
+              ><button
+                class="bg-red-500 px-2 md:py-0 py-2 text-slate-100 rounded-md w-full text-start"
+              >
+                Déconnexion
               </button></router-link
             >
           </li>

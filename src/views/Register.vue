@@ -28,6 +28,9 @@
                 placeholder="johndoe"
                 required=""
               />
+              <p v-if="errors.username" class="text-red-500">
+                {{ errors.username }}
+              </p>
             </div>
             <div>
               <label
@@ -44,6 +47,7 @@
                 placeholder="name@company.com"
                 required=""
               />
+              <p v-if="errors.email" class="text-red-500">{{ errors.email }}</p>
             </div>
             <div>
               <label
@@ -60,6 +64,9 @@
                 class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required=""
               />
+              <p v-if="errors.password" class="text-red-500">
+                {{ errors.password }}
+              </p>
             </div>
             <div>
               <label
@@ -68,6 +75,7 @@
                 >Confirmer le mot de passe</label
               >
               <input
+                v-model="data.confirmPassword"
                 type="password"
                 name="password"
                 id="check-password"
@@ -75,6 +83,9 @@
                 class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required=""
               />
+              <p v-if="errors.confirmPassword" class="text-red-500">
+                {{ errors.confirmPassword }}
+              </p>
             </div>
 
             <!-- <div class="flex items-center justify-between">
@@ -109,8 +120,11 @@
 </template>
 
 <script langu="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+import RegisterSchema from "@/validations/registerValidation";
+import { z } from "zod";
+
 export default {
   name: "Register",
   setup() {
@@ -118,21 +132,35 @@ export default {
       username: "",
       email: "",
       password: "",
+      confirmPassword: "",
     });
-
+    const errors = ref({});
     const router = useRouter();
 
     const submit = async () => {
-      await fetch("http://localhost:3000/auth/signup", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      try {
+        const validatedData = RegisterSchema.parse(data);
 
-      await router.push("/login");
+        await fetch("http://localhost:3000/auth/signup", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(validatedData),
+        });
+
+        await router.push("/login");
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          errors.value = error.errors.reduce((prev, curr) => {
+            return { ...prev, [curr.path[0]]: curr.message };
+          }, {});
+        } else {
+          console.error(error);
+        }
+      }
     };
     return {
       data,
+      errors,
       submit,
     };
   },

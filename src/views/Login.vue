@@ -27,6 +27,7 @@
                 class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="name@company.com"
               />
+              <p v-if="errors.email" class="text-red-500">{{ errors.email }}</p>
             </div>
             <div>
               <label
@@ -77,8 +78,10 @@
 
 <script lang="ts">
 import store from "@/store";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+import { z } from "zod";
+import LoginSchema from "@/validations/loginValidation";
 
 export default {
   name: "Login",
@@ -88,28 +91,48 @@ export default {
       password: "",
     });
     const router = useRouter();
+    const errors = ref({});
 
     const submit = async () => {
-      const response = await fetch("http://localhost:3000/auth/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
-      console.log(response);
+      try {
+        LoginSchema.parse(data);
 
-      const userData = await response.json();
-      const userId = userData.user.id;
-      const authToken = userData.token;
-      localStorage.setItem("userId", userId);
-      localStorage.setItem("authToken", authToken);
-      await router.push("/dashboard");
-      store.commit("setAuth", true);
+        const response = await fetch("http://localhost:3000/auth/signin", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(data),
+        });
+
+        const userData = await response.json();
+
+        const userId = userData.user.id;
+        const authToken = userData.token;
+        const expiresIn = 60 * 60 * 24 * 1000;
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("authToken", authToken);
+        localStorage.setItem(
+          "tokenExpiry",
+          (Date.now() + expiresIn).toString()
+        );
+        await router.push("/dashboard");
+        store.commit("SET_AUTH", true);
+      } catch (error) {
+        console.log(error);
+
+        if (error instanceof z.ZodError) {
+          errors.value = error.errors.reduce((prev, curr) => {
+            return { ...prev, [curr.path[0]]: curr.message };
+          }, {});
+        } else {
+          console.error(error);
+        }
+      }
     };
-
     return {
+      errors,
       data,
       submit,
     };
