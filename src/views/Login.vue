@@ -27,7 +27,10 @@
                 class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="name@company.com"
               />
-              <p v-if="errors.email" class="text-red-500">{{ errors.email }}</p>
+              <p v-if="errors.email" class="text-red-500">
+                {{ errors.email }}
+              </p>
+              <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
             </div>
             <div>
               <label
@@ -78,10 +81,12 @@
 
 <script lang="ts">
 import store from "@/store";
-import { reactive, ref } from "vue";
+import { computed, reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { z } from "zod";
 import LoginSchema from "@/validations/loginValidation";
+import { useRoute } from "vue-router";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "Login",
@@ -90,8 +95,16 @@ export default {
       email: "",
       password: "",
     });
+
     const router = useRouter();
-    const errors = ref({});
+    onMounted(() => {
+      if (route.query.registered) {
+        toast.success("Vous êtes maintenant inscrit!");
+      }
+    });
+    const route = useRoute();
+    const errors = ref<{ email?: string }>({});
+    let errorMessage = ref("");
 
     const submit = async () => {
       try {
@@ -105,6 +118,10 @@ export default {
           credentials: "include",
           body: JSON.stringify(data),
         });
+        if (!response.ok) {
+          const error = await response.json();
+          throw error;
+        }
 
         const userData = await response.json();
 
@@ -120,18 +137,17 @@ export default {
         await router.push("/dashboard");
         store.commit("SET_AUTH", true);
       } catch (error) {
-        console.log(error);
-
         if (error instanceof z.ZodError) {
           errors.value = error.errors.reduce((prev, curr) => {
             return { ...prev, [curr.path[0]]: curr.message };
           }, {});
         } else {
-          console.error(error);
+          errorMessage.value = (error as Error).message;
         }
       }
     };
     return {
+      errorMessage,
       errors,
       data,
       submit,

@@ -124,6 +124,8 @@ import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import RegisterSchema from "@/validations/registerValidation";
 import { z } from "zod";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 export default {
   name: "Register",
@@ -146,8 +148,7 @@ export default {
           headers: { "content-type": "application/json" },
           body: JSON.stringify(validatedData),
         });
-
-        await router.push("/login");
+        await router.push({ path: "/login", query: { registered: true } });
       } catch (error) {
         if (error instanceof z.ZodError) {
           errors.value = error.errors.reduce((prev, curr) => {

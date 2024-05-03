@@ -2,8 +2,8 @@ import { z } from "zod";
 
 const RegisterSchema = z
   .object({
-    username: z.string().refine((username) => username.length > 4, {
-      message: "Le nom d'utilisateur doit faire au moins 5 caractères",
+    username: z.string().refine((username) => username.length > 2, {
+      message: "Le nom d'utilisateur doit faire au moins 3 caractères",
       path: ["username"],
     }),
     email: z.string().email(),
