@@ -1,6 +1,11 @@
 <style scoped>
 .section-fullscreen {
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 72px);
+}
+@media (min-width: 768px) {
+  .section-fullscreen {
+    min-height: calc(100vh - 56px);
+  }
 }
 </style>
 <template>

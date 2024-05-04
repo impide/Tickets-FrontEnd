@@ -98,7 +98,7 @@ export default {
     const auth = computed(() => store.state.authenticated);
     const router = useRouter();
     const logout = async () => {
-      await fetch("http://localhost:3000/auth/signout", {
+      await fetch(`${process.env.VUE_APP_HOST}/auth/signout`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

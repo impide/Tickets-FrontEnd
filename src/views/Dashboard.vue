@@ -1,6 +1,11 @@
 <style scoped>
 .section-fullscreen {
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 72px);
+}
+@media (min-width: 768px) {
+  .section-fullscreen {
+    min-height: calc(100vh - 56px);
+  }
 }
 </style>
 <template>
@@ -30,17 +35,20 @@ export default {
 
     onMounted(async () => {
       try {
-        const response = await fetch(`http://localhost:3000/users/${userId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
-        if (!response.ok) {
-          throw new Error("HTTP error " + response.status);
+        const responseUser = await fetch(
+          `${process.env.VUE_APP_HOST}/users/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        );
+        if (!responseUser.ok) {
+          throw new Error("HTTP error " + responseUser.status);
         }
-        const content = await response.json();
+        const content = await responseUser.json();
         const user = content.user;
 
         message.value = `hello ${user.username}`;

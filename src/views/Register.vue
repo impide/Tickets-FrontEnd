@@ -1,7 +1,18 @@
+<style scoped>
+.section-fullscreen {
+  min-height: calc(100vh - 72px);
+}
+@media (min-width: 768px) {
+  .section-fullscreen {
+    min-height: calc(100vh - 56px);
+  }
+}
+</style>
+
 <template>
   <section class="bg-gradient-to-bl from-[#c6cbff] to-white dark:bg-gray-900">
     <div
-      class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
+      class="flex flex-col items-center justify-center px-6 py-8 mx-auto section-fullscreen lg:py-0"
     >
       <div
         class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700"
@@ -48,6 +59,7 @@
                 required=""
               />
               <p v-if="errors.email" class="text-red-500">{{ errors.email }}</p>
+              <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
             </div>
             <div>
               <label
@@ -87,18 +99,6 @@
                 {{ errors.confirmPassword }}
               </p>
             </div>
-
-            <!-- <div class="flex items-center justify-between">
-                        <div class="flex items-start">
-                            <div class="flex items-center h-5">
-                              <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required="">
-                            </div>
-                            <div class="ml-3 text-sm">
-                              <label for="remember" class="text-gray-500 dark:text-gray-300">Remember me</label>
-                            </div>
-                        </div>
-                        <a href="#" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
-                    </div> -->
             <button
               type="submit"
               class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
@@ -138,16 +138,24 @@ export default {
     });
     const errors = ref({});
     const router = useRouter();
+    let errorMessage = ref("");
 
     const submit = async () => {
       try {
         const validatedData = RegisterSchema.parse(data);
 
-        await fetch("http://localhost:3000/auth/signup", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(validatedData),
-        });
+        const responseSignup = await fetch(
+          `${process.env.VUE_APP_HOST}/auth/signup`,
+          {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(validatedData),
+          }
+        );
+        if (!responseSignup.ok) {
+          const error = await responseSignup.json();
+          throw error;
+        }
         await router.push({ path: "/login", query: { registered: true } });
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -155,11 +163,12 @@ export default {
             return { ...prev, [curr.path[0]]: curr.message };
           }, {});
         } else {
-          console.error(error);
+          errorMessage = errorMessage.value = error.message;
         }
       }
     };
     return {
+      errorMessage,
       data,
       errors,
       submit,
