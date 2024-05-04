@@ -2,11 +2,21 @@ import { z } from "zod";
 
 const RegisterSchema = z
   .object({
-    username: z.string().refine((username) => username.length > 2, {
-      message: "Le nom d'utilisateur doit faire au moins 3 caractères",
-      path: ["username"],
-    }),
-    email: z.string().email(),
+    username: z
+      .string()
+      .refine((username) => username.length > 2, {
+        message: "Le nom d'utilisateur doit faire au moins 3 caractères",
+        path: ["username"],
+      })
+      .refine((value) => !/\s/.test(value), {
+        message: "Le nom d'utilisateur ne doit pas contenir d'espaces",
+      }),
+    email: z
+      .string()
+      .email()
+      .refine((value) => !/\s/.test(value), {
+        message: "L'email ne doit pas contenir d'espaces",
+      }),
     password: z
       .string()
       .refine((password) => password.length >= 8, {
