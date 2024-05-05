@@ -66,7 +66,7 @@
             >
           </li>
           <li>
-            <router-link to="/login" @click="logout"
+            <router-link id="logout" to="/login" @click="logout"
               ><button
                 class="bg-red-500 px-2 md:py-0 py-2 text-slate-100 rounded-md w-full text-start"
               >
@@ -85,7 +85,6 @@ import { defineComponent } from "vue";
 defineComponent({
   name: "MaterialSymbolsLogout",
 });
-import { Icon } from "@iconify/vue";
 import { useStore } from "vuex";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
