@@ -1,17 +1,7 @@
-<style scoped>
-.section-fullscreen {
-  min-height: calc(100vh - 72px);
-}
-@media (min-width: 768px) {
-  .section-fullscreen {
-    min-height: calc(100vh - 56px);
-  }
-}
-</style>
 <template>
   <div>
     <section
-      class="md:flex-row items-center gap-5 md:justify-center bg-gradient-to-bl from-[#c6cbff] to-white section-fullscreen"
+      class="md:flex-row items-center gap-5 md:justify-center bg-gradient-to-bl from-[#c6cbff] to-white min-h-screen"
     >
       <Sidebar />
       <router-view></router-view>

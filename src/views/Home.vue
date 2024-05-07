@@ -19,7 +19,7 @@
       </h2>
       <p class="text-xl">
         Ici, vous pouvez facilement créer des tickets, les suivre et les
-        clôturer une fois résolus.
+        supprimer une fois résolus.
       </p>
       <p class="text-xl">
         Pour commencer, créez un ticket en cliquant sur le bouton 'Nouveau

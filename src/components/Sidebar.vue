@@ -24,10 +24,12 @@
 
   <aside
     id="sidebar-multi-level-sidebar"
-    class="fixed top-[72px] md:top-14 left-0 z-40 w-64 h-screen transition-transform -translate-x-full md:translate-x-0"
+    class="fixed left-0 z-40 w-64 h-screen transition-transform -translate-x-full md:translate-x-0 shadow-lg rounded-md"
     aria-label="Sidebar"
   >
-    <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+    <div
+      class="h-full px-3 py-4 overflow-y-auto flex flex-col justify-between bg-gray-50 dark:bg-gray-800"
+    >
       <ul class="space-y-2 font-medium">
         <li>
           <router-link
@@ -109,13 +111,83 @@
             <span class="flex-1 ms-3 whitespace-nowrap">Mes données</span>
           </router-link>
         </li>
+        <li>
+          <router-link
+            to="/dashboard/admin"
+            v-if="isAdmin"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill="#6b7280"
+                d="M12 12h7c-.53 4.11-3.28 7.78-7 8.92zH5V6.3l7-3.11M12 1L3 5v6c0 5.55 3.84 10.73 9 12c5.16-1.27 9-6.45 9-12V5z"
+              />
+            </svg>
+            <span class="flex-1 ms-3 whitespace-nowrap">Admin</span>
+          </router-link>
+        </li>
       </ul>
+      <button
+        class="flex items-center py-2 px-3 w-11/12 text-gray-900 rounded-lg bg-red-500 hover:bg-red-600 group"
+        @click="logout"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="2em"
+          height="2em"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="white"
+            d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h7v2H5v14h7v2zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5z"
+          />
+        </svg>
+        <span class="flex-1 ms-3 text-xl whitespace-nowrap text-white"
+          >Déconnexion</span
+        >
+      </button>
     </div>
   </aside>
 </template>
 
 <script>
+import { defineComponent } from "vue";
+
+defineComponent({
+  name: "MaterialSymbolsLogout",
+  name: "MdiAdministrator",
+});
+import { useStore } from "vuex";
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+
 export default {
   name: "Sidebar",
+  setup() {
+    const store = useStore();
+
+    const auth = computed(() => store.state.authenticated);
+    const router = useRouter();
+    const isAdmin = store.state.isAdmin;
+    const logout = async () => {
+      await fetch(`${process.env.VUE_APP_HOST}/auth/signout`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      store.dispatch("setAuth", false);
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userId");
+      await router.push("/");
+    };
+
+    return { auth, logout, isAdmin };
+  },
 };
 </script>

@@ -7,6 +7,8 @@ import MyTickets from "@/views/MyTickets.vue";
 import CreateTicket from "@/views/CreateTicket.vue";
 import MyData from "@/views/MyData.vue";
 import DashboardHome from "@/views/DashboardHome.vue";
+import Admin from "@/views/Admin.vue";
+import { useStore } from "vuex";
 
 const routes: Array<RouteRecordRaw> = [
   { path: "/", component: Home, meta: { guest: true } },
@@ -19,6 +21,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: "my-tickets", component: MyTickets },
       { path: "create-ticket", component: CreateTicket },
       { path: "my-data", component: MyData },
+      { path: "admin", component: Admin, meta: { admin: true } },
       { path: "", component: DashboardHome },
     ],
   },
@@ -29,21 +32,63 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const tokenExpiry = localStorage.getItem("tokenExpiry");
+  const store = useStore();
+
+  const auth = store.state.authenticated;
+  let isAdmin = store.state.isAdmin;
+
+  if (isAdmin === null) {
+    const token = localStorage.getItem("authToken");
+
+    if (token) {
+      try {
+        const tokenObject = { token };
+        const responseToken = await fetch(
+          `${process.env.VUE_APP_HOST}/auth/verify-token`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(tokenObject),
+          }
+        );
+        const userRole = await responseToken.json();
+
+        if (userRole.isAdmin) {
+          store.commit("SET_ADMIN", true);
+          isAdmin = true;
+        } else {
+          store.commit("SET_ADMIN", false);
+          isAdmin = false;
+        }
+      } catch (error) {
+        console.error("Error verifying token:", error);
+      }
+    }
+  }
   if (new Date().getTime() > Number(tokenExpiry)) {
     localStorage.removeItem("authToken");
     localStorage.removeItem("tokenExpiry");
   }
-  const isAuthenticated = !!localStorage.getItem("authToken");
-  if (to.matched.some((record) => record.meta.guest)) {
-    if (isAuthenticated) {
+
+  if (to.matched.some((record) => record.meta.admin)) {
+    if (!isAdmin) {
+      next("/dashboard");
+    } else {
+      next();
+    }
+  } else if (to.matched.some((record) => record.meta.guest)) {
+    if (auth) {
       next("/dashboard");
     } else {
       next();
     }
   } else {
-    if (!isAuthenticated) {
+    if (!auth) {
       next("/login");
     } else {
       next();

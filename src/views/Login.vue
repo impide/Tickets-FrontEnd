@@ -130,6 +130,14 @@ export default {
 
         const userData = await responseLogin.json();
 
+        const userRole = userData.user.role;
+
+        if (userRole === "ADMIN") {
+          store.commit("SET_ADMIN", true);
+        } else {
+          store.commit("SET_ADMIN", false);
+        }
+
         const userId = userData.user.id;
         const authToken = userData.token;
         const expiresIn = 60 * 60 * 24 * 1000;
@@ -139,8 +147,9 @@ export default {
           "tokenExpiry",
           (Date.now() + expiresIn).toString()
         );
-        await router.push("/dashboard");
         store.commit("SET_AUTH", true);
+
+        await router.push("/dashboard");
       } catch (error) {
         if (error instanceof z.ZodError) {
           errors.value = error.errors.reduce((prev, curr) => {

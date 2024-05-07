@@ -68,7 +68,6 @@ import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import TicketSchema from "@/validations/ticketValidation";
 import { z } from "zod";
-import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 export default {
   name: "Ticket",
@@ -114,4 +113,16 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.box-shadow {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+</style>
