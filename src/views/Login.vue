@@ -48,14 +48,34 @@
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Mot de passe</label
               >
-              <input
-                v-model="data.password"
-                type="password"
-                name="password"
-                id="password"
-                placeholder="••••••••"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
+              <div class="flex">
+                <input
+                  v-model="data.password"
+                  :type="passwordInputType"
+                  name="password"
+                  id="password"
+                  placeholder="••••••••"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                /><button @click.prevent="togglePasswordVisibility">
+                  <Icon
+                    v-if="passwordInputType === 'password'"
+                    icon="mdi:show"
+                    class="ml-2"
+                    width="1.4em"
+                    height="1.4em"
+                    style="color: black"
+                  />
+                  <Icon
+                    v-else
+                    icon="mdi:hide"
+                    class="ml-2"
+                    width="1.4em"
+                    height="1.4em"
+                    style="color: black"
+                  />
+                </button>
+              </div>
+
               <p v-if="errors.password" class="text-red-500">
                 {{ errors.password }}
               </p>
@@ -89,14 +109,24 @@ import { z } from "zod";
 import LoginSchema from "@/validations/loginValidation";
 import { useRoute } from "vue-router";
 import { toast } from "vue3-toastify";
+import { Icon } from "@iconify/vue";
 
 export default {
   name: "Login",
+  components: {
+    Icon,
+  },
   setup() {
     const data = reactive({
       email: "",
       password: "",
     });
+
+    let passwordInputType = ref("password");
+    const togglePasswordVisibility = () => {
+      passwordInputType.value =
+        passwordInputType.value === "password" ? "text" : "password";
+    };
 
     const router = useRouter();
     onMounted(() => {
@@ -165,6 +195,8 @@ export default {
     };
 
     return {
+      passwordInputType,
+      togglePasswordVisibility,
       errorMessage,
       errors,
       data,

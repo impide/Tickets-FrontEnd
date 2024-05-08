@@ -67,15 +67,35 @@
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Mot de passe</label
               >
-              <input
-                v-model="data.password"
-                type="password"
-                name="password"
-                id="password"
-                placeholder="••••••••"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required=""
-              />
+              <div class="flex">
+                <input
+                  v-model="data.password"
+                  :type="passwordInputType"
+                  name="password"
+                  id="password"
+                  placeholder="••••••••"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  required=""
+                />
+                <button @click.prevent="togglePasswordVisibility">
+                  <Icon
+                    v-if="passwordInputType === 'password'"
+                    icon="mdi:show"
+                    class="ml-2"
+                    width="1.4em"
+                    height="1.4em"
+                    style="color: black"
+                  />
+                  <Icon
+                    v-else
+                    icon="mdi:hide"
+                    class="ml-2"
+                    width="1.4em"
+                    height="1.4em"
+                    style="color: black"
+                  />
+                </button>
+              </div>
               <p v-if="errors.password" class="text-red-500">
                 {{ errors.password }}
               </p>
@@ -86,15 +106,35 @@
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Confirmer le mot de passe</label
               >
-              <input
-                v-model="data.confirmPassword"
-                type="password"
-                name="password"
-                id="check-password"
-                placeholder="••••••••"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required=""
-              />
+              <div class="flex">
+                <input
+                  v-model="data.confirmPassword"
+                  :type="passwordConfirmInputType"
+                  name="password"
+                  id="check-password"
+                  placeholder="••••••••"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  required=""
+                />
+                <button @click.prevent="togglePasswordConfirmVisibility">
+                  <Icon
+                    v-if="passwordConfirmInputType === 'password'"
+                    icon="mdi:show"
+                    class="ml-2"
+                    width="1.4em"
+                    height="1.4em"
+                    style="color: black"
+                  />
+                  <Icon
+                    v-else
+                    icon="mdi:hide"
+                    class="ml-2"
+                    width="1.4em"
+                    height="1.4em"
+                    style="color: black"
+                  />
+                </button>
+              </div>
               <p v-if="errors.confirmPassword" class="text-red-500">
                 {{ errors.confirmPassword }}
               </p>
@@ -106,11 +146,11 @@
               S'inscrire
             </button>
             <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-              <a
-                href="#"
+              <router-link
+                to="/login"
                 class="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                >Vous avez déjà un compte ? Connecter vous !</a
-              >
+                >Vous avez déjà un compte ? Connecter vous !
+              </router-link>
             </p>
           </form>
         </div>
@@ -124,12 +164,16 @@ import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import RegisterSchema from "@/validations/registerValidation";
 import { z } from "zod";
-import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import store from "@/store";
 
+import { Icon } from "@iconify/vue";
+
 export default {
   name: "Register",
+  components: {
+    Icon,
+  },
   setup() {
     const data = reactive({
       username: "",
@@ -140,6 +184,17 @@ export default {
     const errors = ref({});
     const router = useRouter();
     let errorMessage = ref("");
+
+    let passwordInputType = ref("password");
+    const togglePasswordVisibility = () => {
+      passwordInputType.value =
+        passwordInputType.value === "password" ? "text" : "password";
+    };
+    let passwordConfirmInputType = ref("password");
+    const togglePasswordConfirmVisibility = () => {
+      passwordConfirmInputType.value =
+        passwordConfirmInputType.value === "password" ? "text" : "password";
+    };
 
     const submit = async () => {
       try {
@@ -170,6 +225,10 @@ export default {
       }
     };
     return {
+      passwordConfirmInputType,
+      togglePasswordConfirmVisibility,
+      passwordInputType,
+      togglePasswordVisibility,
       errorMessage,
       data,
       errors,
