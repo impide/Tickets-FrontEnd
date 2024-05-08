@@ -168,8 +168,8 @@ export default defineComponent({
           body: JSON.stringify(validatedData),
           credentials: "include",
         });
-        await router.push("/dashboard");
         store.dispatch("setToast", true);
+        await router.push("/dashboard");
       } catch (error) {
         if (error instanceof z.ZodError) {
           errors.value = error.errors.reduce((prev, curr) => {
