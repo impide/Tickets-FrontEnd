@@ -20,22 +20,12 @@
         />
       </template>
     </draggable>
-    <div class="flex flex-col sm:flex-row items-center mt-10 w-11/12">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="3em"
-        height="3em"
-        viewBox="0 0 24 24"
-      >
-        <path
-          fill="#F05252"
-          d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zM7 6h10v13H7zm2 2v9h2V8zm4 0v9h2V8z"
-        />
-      </svg>
-
+    <div
+      class="fixed bottom-4 flex flex-col sm:flex-row items-center mt-10 w-11/12 md:w-3/5 bg-gradient-to-bl from-[#c6cbff] md:px-3 to-white rounded-lg shadow py-3"
+    >
       <draggable
         v-model="trash"
-        class="p-10 bg-slate-100 border-dashed border-4 border-sky-500 shadow-lg rounded-lg w-full sm:w-4/5"
+        class="p-10 bg-slate-100 border-dashed border-4 border-sky-500 shadow-lg rounded-lg w-full sm:w-full trash-bin"
         group="tickets"
         :itemKey="'1'"
         @change="removeTicket($event.added.newIndex)"
@@ -134,4 +124,16 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.trash-bin::before {
+  content: "Glissez vos tickets cloturés ici pour les supprimer";
+  position: absolute;
+  width: 80%;
+  font-size: 20px;
+  color: dimgrey;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+</style>
