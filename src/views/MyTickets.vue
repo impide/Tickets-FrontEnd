@@ -8,6 +8,7 @@
       v-model="tickets"
       class="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 pt-8 px-6"
       group="tickets"
+      :itemKey="(item) => item.id"
     >
       <template #item="{ element }">
         <TicketCard
@@ -36,6 +37,7 @@
         v-model="trash"
         class="p-10 bg-slate-100 border-dashed border-4 border-sky-500 shadow-lg rounded-lg w-full sm:w-4/5"
         group="tickets"
+        :itemKey="'1'"
         @change="removeTicket($event.added.newIndex)"
       >
         <template #item="{ element }"> </template>
