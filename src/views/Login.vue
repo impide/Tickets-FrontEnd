@@ -100,11 +100,11 @@ export default {
 
     const router = useRouter();
     onMounted(() => {
-      if (route.query.registered) {
+      if (store.state.isToast) {
         toast.success("Vous êtes maintenant inscrit!");
+        store.dispatch("setToast", false);
       }
     });
-    const route = useRoute();
     const errors = ref<{ email?: string; password?: string }>({});
     let errorMessage = ref("");
 

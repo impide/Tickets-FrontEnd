@@ -126,6 +126,7 @@ import RegisterSchema from "@/validations/registerValidation";
 import { z } from "zod";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import store from "@/store";
 
 export default {
   name: "Register",
@@ -156,7 +157,8 @@ export default {
           const error = await responseSignup.json();
           throw error;
         }
-        await router.push({ path: "/login", query: { registered: true } });
+        store.dispatch("setToast", true);
+        await router.push("/login");
       } catch (error) {
         if (error instanceof z.ZodError) {
           errors.value = error.errors.reduce((prev, curr) => {

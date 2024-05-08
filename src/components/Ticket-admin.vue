@@ -5,7 +5,9 @@
       @click.prevent="showModal = true"
       class="relative block min-w-72 h-40 overflow-hidden md:min-w-60 lg:min-w-80 bg-white rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
     >
-      <div class="w-full bg-[#1C64F2] rounded-t-lg box-shadow">
+      <div
+        class="w-full h-9 overflow-scroll scrollbar-hide bg-[#1C64F2] rounded-t-lg box-shadow"
+      >
         <Icon
           v-if="statue === 'PENDING'"
           class="absolute right-0 top-0"
@@ -25,9 +27,11 @@
         </h5>
       </div>
 
-      <p class="text-lg px-2 text-gray-700 text-justify dark:text-gray-400">
-        {{ description }}
-      </p>
+      <div class="h-36 overflow-scroll scrollbar-hide">
+        <p class="text-lg px-2 text-gray-700 text-justify dark:text-gray-400">
+          {{ description }}
+        </p>
+      </div>
     </a>
     <div
       v-if="showModal"
@@ -134,16 +138,19 @@
 
 <script lang="ts">
 import { Icon } from "@iconify/vue";
-import { reactive, ref } from "vue";
+import { defineComponent, reactive, ref } from "vue";
 import { format } from "date-fns";
 import TicketAdminSchema from "@/validations/ticketAdminValidation";
 import { z } from "zod";
-export default {
+import { useRouter } from "vue-router";
+import store from "@/store";
+export default defineComponent({
   name: "TicketAdminCard",
   components: {
     Icon,
   },
-  setup() {
+  setup(props) {
+    const router = useRouter();
     const showModal = ref(false);
     const data = reactive({
       response: "",
@@ -155,12 +162,14 @@ export default {
         const validatedData = TicketAdminSchema.parse(data);
         console.log(validatedData);
 
-        await fetch(`${process.env.VUE_APP_HOST}/tickets/`, {
+        await fetch(`${process.env.VUE_APP_HOST}/tickets/${props.id}`, {
           method: "PUT",
           headers: { "content-type": "application/json" },
           body: JSON.stringify(validatedData),
           credentials: "include",
         });
+        await router.push("/dashboard");
+        store.dispatch("setToast", true);
       } catch (error) {
         if (error instanceof z.ZodError) {
           errors.value = error.errors.reduce((prev, curr) => {
@@ -213,7 +222,7 @@ export default {
       return format(date, "dd/MM/yyyy HH:mm:ss");
     },
   },
-};
+});
 </script>
 
 <style scoped>

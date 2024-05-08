@@ -69,6 +69,7 @@ import { useRouter } from "vue-router";
 import TicketSchema from "@/validations/ticketValidation";
 import { z } from "zod";
 import "vue3-toastify/dist/index.css";
+import store from "@/store";
 export default {
   name: "Ticket",
   setup() {
@@ -89,11 +90,8 @@ export default {
           body: JSON.stringify(validatedData),
           credentials: "include",
         });
-
-        await router.push({
-          path: "/dashboard/my-tickets",
-          query: { created: true },
-        });
+        store.dispatch("setToast", true);
+        await router.push("/dashboard/my-tickets");
       } catch (error) {
         if (error instanceof z.ZodError) {
           errors.value = error.errors.reduce((prev, curr) => {

@@ -14,6 +14,8 @@
           :title="element.title"
           :description="element.description"
           :statue="element.status"
+          :createdAt="element.createdAt"
+          :response="element.response"
         />
       </template>
     </draggable>
@@ -53,6 +55,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { toast } from "vue3-toastify";
 import draggable from "vuedraggable";
+import store from "@/store";
 export default {
   name: "MyTickets",
   components: {
@@ -105,8 +108,9 @@ export default {
       }
     };
     onMounted(async () => {
-      if (route.query.created) {
+      if (store.state.isToast) {
         toast.success("Votre ticket a été créé avec succès");
+        store.dispatch("setToast", false);
       }
       try {
         const response = await fetch(`${process.env.VUE_APP_HOST}/tickets`, {

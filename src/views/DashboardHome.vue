@@ -45,8 +45,10 @@
 </template>
 
 <script>
+import store from "@/store";
 import ApexCharts from "apexcharts";
 import { onBeforeUnmount, onMounted, ref } from "vue";
+import { toast } from "vue3-toastify";
 export default {
   name: "DashboardHome",
   setup() {
@@ -57,6 +59,11 @@ export default {
     let chart = null;
 
     onMounted(async () => {
+      if (store.state.isToast) {
+        toast.success("Tickets cloturés avec succès");
+        store.dispatch("setToast", false);
+      }
+
       const responseUsername = await fetch(
         `${process.env.VUE_APP_HOST}/users/${userId}`,
         {
