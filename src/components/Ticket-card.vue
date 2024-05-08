@@ -1,9 +1,11 @@
 <template>
   <a
     href="#"
-    class="relative block min-w-72 min-h-40 md:min-w-60 lg:min-w-80 bg-white rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+    class="relative block min-w-72 h-52 md:min-w-60 lg:min-w-80 bg-white rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
   >
-    <div class="w-full bg-[#1C64F2] rounded-t-lg box-shadow">
+    <div
+      class="w-full h-9 overflow-scroll scrollbar-hide bg-[#1C64F2] rounded-t-lg box-shadow"
+    >
       <Icon
         v-if="statue === 'PENDING'"
         class="absolute right-0 top-0"
@@ -22,10 +24,11 @@
         {{ title }}
       </h5>
     </div>
-
-    <p class="text-lg px-2 text-gray-700 text-justify dark:text-gray-400">
-      {{ description }}
-    </p>
+    <div class="h-40 overflow-scroll scrollbar-hide">
+      <p class="text-lg px-2 text-gray-700 text-justify dark:text-gray-400">
+        {{ description }}
+      </p>
+    </div>
   </a>
 </template>
 
@@ -56,5 +59,13 @@ export default {
 <style scoped>
 .box-shadow {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 </style>

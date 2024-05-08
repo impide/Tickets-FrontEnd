@@ -45,6 +45,7 @@ router.beforeEach(async (to, from, next) => {
     if (token) {
       try {
         const tokenObject = { token };
+
         const responseToken = await fetch(
           `${process.env.VUE_APP_HOST}/auth/verify-token`,
           {
@@ -56,9 +57,17 @@ router.beforeEach(async (to, from, next) => {
             body: JSON.stringify(tokenObject),
           }
         );
-        const userRole = await responseToken.json();
+        const responseBody = await responseToken.json();
+        if (!responseToken.ok) {
+          if (responseBody.shouldClearLocalStorage === true) {
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("userId");
+          }
 
-        if (userRole.isAdmin) {
+          throw new Error(responseBody.message);
+        }
+
+        if (responseBody.isAdmin) {
           store.commit("SET_ADMIN", true);
           isAdmin = true;
         } else {
@@ -66,6 +75,10 @@ router.beforeEach(async (to, from, next) => {
           isAdmin = false;
         }
       } catch (error) {
+        if ((error as Error).message === "No auth token") {
+          store.commit("SET_AUTH", false);
+          await router.push("/login");
+        }
         console.error("Error verifying token:", error);
       }
     }

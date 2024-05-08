@@ -143,7 +143,7 @@ export default {
   components: {
     Icon,
   },
-  setup(props) {
+  setup() {
     const showModal = ref(false);
     const data = reactive({
       response: "",
@@ -155,7 +155,7 @@ export default {
         const validatedData = TicketAdminSchema.parse(data);
         console.log(validatedData);
 
-        await fetch(`${process.env.VUE_APP_HOST}/tickets/${props.id}`, {
+        await fetch(`${process.env.VUE_APP_HOST}/tickets/`, {
           method: "PUT",
           headers: { "content-type": "application/json" },
           body: JSON.stringify(validatedData),
