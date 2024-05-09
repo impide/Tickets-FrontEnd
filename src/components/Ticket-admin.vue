@@ -160,7 +160,6 @@ export default defineComponent({
     const submit = async () => {
       try {
         const validatedData = TicketAdminSchema.parse(data);
-        console.log(validatedData);
 
         await fetch(`${process.env.VUE_APP_HOST}/tickets/${props.id}`, {
           method: "PUT",

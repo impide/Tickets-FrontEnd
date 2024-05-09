@@ -39,7 +39,7 @@ router.beforeEach(async (to, from, next) => {
   const auth = store.state.authenticated;
   let isAdmin = store.state.isAdmin;
 
-  if (!isAdmin) {
+  if (isAdmin === null) {
     const token = localStorage.getItem("authToken");
 
     if (token) {

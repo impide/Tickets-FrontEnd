@@ -164,10 +164,15 @@ defineComponent({
 import { useStore } from "vuex";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
+import { onMounted } from "vue";
+import { initFlowbite } from "flowbite";
 
 export default {
   name: "Sidebar",
   setup() {
+    onMounted(() => {
+      initFlowbite();
+    });
     const store = useStore();
 
     const auth = computed(() => store.state.authenticated);

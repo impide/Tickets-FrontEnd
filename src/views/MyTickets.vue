@@ -89,7 +89,6 @@ export default {
         if (!response.ok) {
           throw new Error("Erreur lors de la suppression du ticket");
         }
-        console.log("test");
 
         // await nextTick();
         trash.value.splice(index, 1);
