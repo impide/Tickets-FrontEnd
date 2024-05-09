@@ -63,15 +63,14 @@ export default {
         toast.success("Tickets cloturés avec succès");
         store.dispatch("setToast", false);
       }
-
       const responseUsername = await fetch(
         `${process.env.VUE_APP_HOST}/users/${userId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
-          credentials: "include",
         }
       );
       if (!responseUsername.ok) {
