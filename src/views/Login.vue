@@ -146,7 +146,7 @@ export default {
         LoginSchema.parse(data);
 
         const responseLogin = await fetch(
-          `${process.env.VUE_APP_HOST}/auth/signin`,
+          `https://nest-prisma-postgre.onrender.com/auth/signin`,
           {
             method: "POST",
             headers: {
