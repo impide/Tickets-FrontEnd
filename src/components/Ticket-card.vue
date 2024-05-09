@@ -73,7 +73,7 @@
             >
               <p class="text-gray-700 text-justify">{{ description }}</p>
             </div>
-            <div>
+            <div v-if="response !== null || ''">
               <p>La réponse</p>
               <div
                 class="w-full min-h-20 max-h-40 bg-white rounded-lg border px-2 overflow-scroll scrollbar-hide mb-4"
